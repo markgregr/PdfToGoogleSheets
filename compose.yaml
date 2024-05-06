@@ -1,0 +1,7 @@
+services:
+  pdfrender:
+    container_name: pdfrender
+    build:
+      context: ./
+    ports:
+      - "8000:8000"

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload PDF</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="mb-4">Загрузить PDF в Google Sheets</h1>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="file">Выбрать файл:</label>
+          <input
+            type="file"
+            class="form-control-file"
+            id="file"
+            name="file"
+            accept=".pdf"
+          />
+        </div>
+        <div class="form-group">
+          <label for="sheet_id">Google Sheet ID:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="sheet_id"
+            name="sheet_id"
+          />
+        </div>
+        <div class="form-group">
+          <label for="sheet_name">Название листа:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="sheet_name"
+            name="sheet_name"
+          />
+        </div>
+        <button type="button" id="uploadButton" class="btn btn-primary">
+          Загрузить
+        </button>
+      </form>
+      <div id="notification" class="mt-3"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+      // Добавляем обработчик события нажатия на кнопку "Загрузить"
+      $("#uploadButton").click(function () {
+        // Получаем значения полей
+        var sheetId = $("#sheet_id").val();
+        var sheetName = $("#sheet_name").val();
+        var url =
+          "/uploadfile/?sheet_id=" +
+          encodeURIComponent(sheetId) +
+          "&sheet_name=" +
+          encodeURIComponent(sheetName);
+
+        // Создаем объект FormData для передачи файлов
+        var formData = new FormData();
+        formData.append("file", $("#file")[0].files[0]); // Добавляем файл
+
+        // Отправляем AJAX запрос на сервер
+        $.ajax({
+          url: url,
+          type: "POST",
+          data: formData,
+          processData: false, // Отключаем преобразование объекта FormData в строку
+          contentType: false, // Отключаем установку заголовка Content-Type
+          success: function (response) {
+            // Показываем уведомление о успешной загрузке
+            $("#notification").html(
+              '<div class="alert alert-success" role="alert">Файл успешно загружен в Google Sheets!</div>'
+            );
+          },
+          error: function (xhr, status, error) {
+            // Показываем уведомление об ошибке
+            $("#notification").html(
+              '<div class="alert alert-danger" role="alert">Произошла ошибка при загрузке файла: ' +
+                error +
+                "</div>"
+            );
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
